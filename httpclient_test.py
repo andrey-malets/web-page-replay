@@ -212,15 +212,18 @@ class ActualNetworkFetchTest(test_utils.RealNetworkFetchTest):
 
 class HttpArchiveFetchTest(unittest.TestCase):
 
+  TEST_REQUEST_TIME = datetime.datetime(2016, 11, 17, 1, 2, 3, 456)
+
   def createTestResponse(self):
     return httparchive.ArchivedHttpResponse(
         11, 200, 'OK', [('content-type', 'text/html')],
-        ['<body>test</body>'], request_time=datetime.datetime(2016, 11, 17))
+        ['<body>test</body>'],
+        request_time=HttpArchiveFetchTest.TEST_REQUEST_TIME)
 
   def checkTestResponse(self, actual_response, archive, request):
     self.assertEqual(actual_response, archive[request])
     self.assertEqual(['<body>test</body>'], actual_response.response_data)
-    self.assertEqual(datetime.datetime(2016, 11, 17),
+    self.assertEqual(HttpArchiveFetchTest.TEST_REQUEST_TIME,
                      actual_response.request_time)
 
   @staticmethod
@@ -271,7 +274,7 @@ class ReplayHttpArchiveFetchTest(HttpArchiveFetchTest):
     fetch = httpclient.ReplayHttpArchiveFetch(
         archive, None, script_injector.GetScriptInjector("time_script.js"))
     self.assertEqual(
-        ['<script>var time_seed=1479340800000</script><body>test</body>'],
+        ['<script>var time_seed=1479344523000</script><body>test</body>'],
         fetch(request).response_data)
 
 
